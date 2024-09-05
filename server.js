@@ -8,7 +8,7 @@ const app = express();
 
 // CORS setup
 app.use(cors({
-    origin: process.env.FRONTEND_URL || '*',
+    origin: "https://client1-dmrp.onrender.com/" || '*',
     credentials: true
 }));
 
