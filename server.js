@@ -6,12 +6,12 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS setup
 app.use(cors({
-    o origin: 'https://client1-gamma.vercel.app/',  // Replace with your actual frontend URL
+    origin: ['https://client1-dmrp.onrender.com', 'https://client1-gamma.vercel.app'],  // Frontend URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+
 
 app.use(express.json());             // Parse JSON requests
 app.use(cookieParser());             // Parse cookies
