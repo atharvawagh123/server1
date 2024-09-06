@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: ['https://client1-dmrp.onrender.com', 'https://client1-gamma.vercel.app'],  // Frontend URLs
+    origin: ['https://client1-dmrp.onrender.com', 'https://client1-gamma.vercel.app', 'http://localhost:3000'],  // Frontend URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
