@@ -27,7 +27,9 @@ const userCtrl = {
 
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
-                path: '/user/refresh_token'
+                path: '/user/refresh_token',
+                secure: process.env.NODE_ENV === 'production', // Secure cookie in production
+                sameSite: 'Strict' // Protect against CSRF
             });
 
             res.json({ accesstoken });
@@ -38,20 +40,19 @@ const userCtrl = {
     },
 
     refreshtoken: async (req, res) => {
-  try{
+        try {
             const rf_token = req.cookies.refreshtoken;
 
-            if(!rf_token) return res.status(400).json({msg:"Please Login or Registers"});
-    
-            jwt.verify(rf_token,process.env.REFRESH_TOKEN_SECRET,(err,user) => {
-                if(err) return res.status(400).json({msg:"Please Login or Register"})
-                const accesstoken = createAccessToken({id:user.id})
-            res.json({accesstoken})
-            })
-    
-        }
-        catch(err){
-return res.status(500).json({msg:err.message})
+            if (!rf_token) return res.status(400).json({ msg: "Please Login or Register" });
+
+            jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+                if (err) return res.status(400).json({ msg: "Please Login or Register" });
+                const accesstoken = createAccessToken({ id: user.id });
+                res.json({ accesstoken });
+            });
+
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
         }
     },
 
@@ -70,7 +71,9 @@ return res.status(500).json({msg:err.message})
 
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
-                path: '/user/refresh_token'
+                path: '/user/refresh_token',
+                secure: process.env.NODE_ENV === 'production', // Secure cookie in production
+                sameSite: 'Strict' // Protect against CSRF
             });
 
             res.json({ accesstoken });
@@ -160,6 +163,10 @@ return res.status(500).json({msg:err.message})
 
             const user = await Users.findOne({ email });
             if (!user) return res.status(400).json({ msg: 'User not found' });
+
+            if (!user.cart || user.cart.length === 0) {
+                return res.status(400).json({ msg: 'Cart is empty' }); // Check for empty cart
+            }
 
             const cartItem = user.cart.find(item => item.product_id === product_id);
             if (!cartItem) return res.status(400).json({ msg: 'Product not found in cart' });
