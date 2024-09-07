@@ -25,11 +25,12 @@ const userCtrl = {
             const accesstoken = createAccessToken({ id: newUser._id });
             const refreshtoken = createRefreshToken({ id: newUser._id });
 
+            // Updated cookie settings
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
                 path: '/user/refresh_token',
-                secure: process.env.NODE_ENV === 'production', // Secure cookie in production
-                sameSite: 'Strict' // Protect against CSRF
+                secure: process.env.NODE_ENV === 'production', // Use secure cookie in production
+                sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax' // Adjust SameSite for cross-site cookies
             });
 
             res.json({ accesstoken });
@@ -43,10 +44,10 @@ const userCtrl = {
         try {
             const rf_token = req.cookies.refreshtoken;
 
-            if (!rf_token) return res.status(400).json({ msg: "Please Login or Register" });
+            if (!rf_token) return res.status(400).json({ msg: "No refresh token, please log in" });
 
             jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-                if (err) return res.status(400).json({ msg: "Please Login or Register" });
+                if (err) return res.status(403).json({ msg: "Invalid or expired refresh token, please log in" });
                 const accesstoken = createAccessToken({ id: user.id });
                 res.json({ accesstoken });
             });
@@ -69,11 +70,12 @@ const userCtrl = {
             const accesstoken = createAccessToken({ id: user._id });
             const refreshtoken = createRefreshToken({ id: user._id });
 
+            // Updated cookie settings
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
                 path: '/user/refresh_token',
-                secure: process.env.NODE_ENV === 'production', // Secure cookie in production
-                sameSite: 'Strict' // Protect against CSRF
+                secure: process.env.NODE_ENV === 'production', // Use secure cookie in production
+                sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax' // Adjust SameSite for cross-site cookies
             });
 
             res.json({ accesstoken });
@@ -165,7 +167,7 @@ const userCtrl = {
             if (!user) return res.status(400).json({ msg: 'User not found' });
 
             if (!user.cart || user.cart.length === 0) {
-                return res.status(400).json({ msg: 'Cart is empty' }); // Check for empty cart
+                return res.status(400).json({ msg: 'Cart is empty' });
             }
 
             const cartItem = user.cart.find(item => item.product_id === product_id);
@@ -183,10 +185,10 @@ const userCtrl = {
 
 const createAccessToken = (payload) => {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
-}
+};
 
 const createRefreshToken = (payload) => {
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-}
+};
 
 module.exports = userCtrl;
