@@ -25,13 +25,13 @@ const userCtrl = {
             const accesstoken = createAccessToken({ id: newUser._id });
             const refreshtoken = createRefreshToken({ id: newUser._id });
 
-            // Updated cookie settings
-            res.cookie('refreshtoken', refreshtoken, {
+            res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
-                path: '/user/refresh_token',
-                secure: process.env.NODE_ENV === 'production', // Use secure cookie in production
-                sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax' // Adjust SameSite for cross-site cookies
+                sameSite: 'None',  // Allows cross-origin requests
+                secure: true,      // Ensures cookies are sent only over HTTPS
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
+
 
             res.json({ accesstoken });
 
@@ -70,13 +70,13 @@ const userCtrl = {
             const accesstoken = createAccessToken({ id: user._id });
             const refreshtoken = createRefreshToken({ id: user._id });
 
-            // Updated cookie settings
-            res.cookie('refreshtoken', refreshtoken, {
+            res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
-                path: '/user/refresh_token',
-                secure: process.env.NODE_ENV === 'production', // Use secure cookie in production
-                sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'Lax' // Adjust SameSite for cross-site cookies
+                sameSite: 'None',  // Allows cross-origin requests
+                secure: true,      // Ensures cookies are sent only over HTTPS
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
+
 
             res.json({ accesstoken });
         } catch (err) {
